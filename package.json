@@ -2,6 +2,8 @@
   "name": "cake",
   "type": "module",
   "version": "0.0.1",
+  "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -16,5 +18,10 @@
     "astro": "^4.4.12",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"
-  }
+  },
+  "engines": {
+    "node": ">=20.11.1",
+    "pnpm": ">=8.15.4"
+  },
+  "packageManager": "pnpm@8.15.4"
 }
