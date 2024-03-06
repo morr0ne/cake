@@ -5,6 +5,7 @@ import sitemap from "@astrojs/sitemap";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://cake.morrone.dev",
-  integrations: [tailwind(), sitemap()]
+    site: "https://cake.morrone.dev",
+    integrations: [tailwind(), sitemap()]
 });
+
