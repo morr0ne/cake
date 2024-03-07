@@ -4,24 +4,46 @@
         src: url("/NimbusMonoPS-Regular.ttf");
     }
 
-    body {
+    #screen {
         font-family: "Courier New", "Nimbus Mono", "Courier", "CourierPrimeSans",
             monospace;
         font-weight: 900;
         font-size: 16px;
+
+        color: #ffb600;
+        background-color: #000;
+
+        height: 100vh;
+        width: 100vw;
+        user-select: none;
+
+        display: grid;
+        gap: 0px;
+
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+    }
+
+    #lyrics-container {
+        grid-row: span 2 / span 2;
+    }
+
+    #ascii-art {
+        line-height: 1.2;
     }
 </style>
 
-<div
-    class="grid gap-0 grid-cols-2 grid-rows-2 h-screen w-screen bg-black text-credits-yellow select-none"
-    id="outro"
->
-    <div class="row-span-2">
-        <span id="lyrics"></span><span id="cursor">_</span>
+<div id="screen">
+    <div id="lyrics-container">
+        <span id="lyrics"></span>
+        <span id="cursor">_</span>
     </div>
-    <div class="" id="credits"></div>
-    <div class="">
-        <pre id="art" class="leading-[1.2]"></pre>
+    <div id="credits-container">
+        <span id="credits"></span>
+        <!-- <span id="cursor">_</span> -->
+    </div>
+    <div>
+        <pre id="ascii-art"></pre>
     </div>
 </div>
 
@@ -36,7 +58,7 @@
 
     const creditsDiv = document.getElementById("credits")! as HTMLDivElement;
 
-    const artDiv = document.getElementById("art")! as HTMLDivElement;
+    const asciiArtDiv = document.getElementById("ascii-art")! as HTMLDivElement;
 
     const cursor = document.getElementById("cursor")! as HTMLSpanElement;
 
@@ -132,7 +154,7 @@
                 const lyric = lyrics[lyricIndex];
 
                 if (lyric.asciiArt !== undefined) {
-                    artDiv.innerText = ASCII_ART[lyric.asciiArt];
+                    asciiArtDiv.innerText = ASCII_ART[lyric.asciiArt];
                 }
 
                 drawLine(lyric, elasped - expectedTime).then(() => {
