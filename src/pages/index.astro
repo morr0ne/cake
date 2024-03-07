@@ -6,11 +6,132 @@
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>The cake is a lie</title>
+		<script>
+			import { lyrics, type Lyric } from "./lyrics.ts";
+			import { ASCII_ART } from "./ascii_art.ts";
+
+			const audio = new Audio("/portal_still_alive.mp3");
+
+			const lyricsDiv = document.getElementById(
+				"lyrics",
+			)! as HTMLDivElement;
+
+			const creditsDiv = document.getElementById(
+				"credits",
+			)! as HTMLDivElement;
+
+			const artDiv = document.getElementById("art")! as HTMLDivElement;
+
+			audio.addEventListener("canplaythrough", (event) => {
+				const startTime = performance.now();
+
+				let expectedTime = 0;
+				let lyricIndex = 0;
+
+				let songStarted = false;
+				let previousLineDone = true;
+
+				function playSong() {
+					const elasped = performance.now() - startTime;
+
+					if (!songStarted && elasped >= 6850) {
+						audio.play();
+						songStarted = true;
+
+						console.log(`Started playing audio after ${elasped}ms`);
+					}
+
+					if (previousLineDone && elasped >= expectedTime) {
+						const lyric = lyrics[lyricIndex];
+
+						if (lyric.asciiArt !== undefined) {
+							artDiv.innerText = ASCII_ART[lyric.asciiArt];
+						}
+
+						drawLine(lyric, elasped - expectedTime).then(() => {
+							previousLineDone = true;
+						});
+
+						expectedTime += lyric.duration;
+						lyricIndex++;
+						previousLineDone = false;
+					}
+
+					window.requestAnimationFrame(playSong);
+				}
+
+				function drawLine(
+					lyric: Lyric,
+					deviation: number,
+				): Promise<void> {
+					switch (lyric.line) {
+						case " ":
+							return new Promise((resolve) =>
+								setTimeout(resolve, lyric.duration - deviation),
+							);
+						case "* ":
+							return new Promise((resolve) => {
+								setTimeout(() => {
+									lyricsDiv.innerText += " ";
+									resolve();
+								}, lyric.duration - deviation);
+							});
+						case "&":
+							return new Promise((resolve) => {
+								setTimeout(() => {
+									lyricsDiv.innerText = "";
+									resolve();
+								}, lyric.duration - deviation);
+							});
+						case "^":
+							return new Promise((resolve) => {
+								setTimeout(() => {
+									lyricsDiv.innerText += "\n";
+									resolve();
+								}, lyric.duration - deviation);
+							});
+
+						default:
+							return new Promise((resolve) => {
+								let charIndex = 0;
+
+								let id = setInterval(
+									() => {
+										const char = lyric.line[charIndex];
+
+										lyricsDiv.innerHTML += char;
+										charIndex++;
+
+										if (charIndex >= lyric.line.length) {
+											if (!lyric.sameLine) {
+												lyricsDiv.innerText += "\n";
+											}
+
+											clearInterval(id);
+											resolve();
+										}
+									},
+									(lyric.duration - deviation) /
+										lyric.line.length,
+								);
+							});
+					}
+				}
+
+				window.requestAnimationFrame(playSong);
+			});
+		</script>
 	</head>
 	<body>
-		<h1>Astro</h1>
+		<div class="grid grid-cols-2 grid-rows-2 h-screen">
+			<div class="bg-black text-credits-orange row-span-2" id="lyrics">
+			</div>
+			<div class="bg-lime-600 text-credits-orange" id="credits"></div>
+			<div class="bg-fuchsia-800 text-credits-orange">
+				<pre id="art" class="leading-[1.2]"></pre>
+			</div>
+		</div>
 	</body>
 </html>
