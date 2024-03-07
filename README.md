@@ -1,4 +1,6 @@
-# Cake
+# Cake - The Portal ending screen in your browser
+
+A recreation of the Portal ending screen made using web tecnologies
 
 # License
 
