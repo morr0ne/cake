@@ -4,19 +4,18 @@
         src: url("/NimbusMonoPS-Regular.ttf");
     }
 
-    #outro {
-        font-family: "Courier New", "Nimbus Mono";
+    body {
+        font-family: "Courier New", "Nimbus Mono", "Courier", "CourierPrimeSans",
+            monospace;
         font-weight: 900;
         font-size: 16px;
     }
 </style>
 
 <div
-    class="grid gap-0 grid-cols-2 grid-rows-2 h-screen bg-black text-credits-orange select-none"
+    class="grid gap-0 grid-cols-2 grid-rows-2 h-screen w-screen bg-black text-credits-orange select-none"
     id="outro"
 >
-    <!-- <div class="h-1">----------------------------</div>
-    <div class="h-1">----------------------------</div> -->
     <div class="row-span-2">
         <span id="lyrics"></span><span id="cursor">_</span>
     </div>
@@ -53,15 +52,43 @@
         const startTime = performance.now();
 
         startLyrics(startTime);
-        // startCredits(startTime);
+        startCredits(startTime);
     });
 
     async function startCredits(startTime: number) {
-        for (const credit of credits) {
-            await drawLine(credit);
+        creditsDiv.innerText = "\n".repeat(16);
+        let creditIndex = 0;
+        let startOffset = 9000;
+
+        let previousLineDone = true;
+
+        async function playSong() {
+            const elasped = performance.now() - startTime;
+
+            if (elasped < startOffset) {
+                window.requestAnimationFrame(playSong);
+                return;
+            }
+
+            if (previousLineDone) {
+                const credit = credits[creditIndex];
+
+                drawLine(credit).then(() => {
+                    previousLineDone = true;
+                });
+
+                creditIndex++;
+                previousLineDone = false;
+            }
+
+            window.requestAnimationFrame(playSong);
         }
 
         function drawLine(credit: string): Promise<void> {
+            creditsDiv.innerText = creditsDiv.innerText.substring(
+                creditsDiv.innerText.indexOf("\n") + 1,
+            );
+
             return new Promise((resolve) => {
                 let charIndex = 0;
 
@@ -77,9 +104,11 @@
                         clearInterval(id);
                         resolve();
                     }
-                }, 570 / credit.length);
+                }, 68.623562);
             });
         }
+
+        window.requestAnimationFrame(playSong);
     }
 
     function startLyrics(startTime: number) {
