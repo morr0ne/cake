@@ -31,16 +31,31 @@
     #ascii-art {
         line-height: 1.2;
     }
+
+    /* 
+    FIXME
+    The cursors in the game blink at opposite intervals
+    */
+    .cursor {
+        animation: blink 600ms step-end infinite;
+    }
+
+    @keyframes blink {
+        50% {
+            visibility: hidden;
+        }
+        100% {
+            visibility: visible;
+        }
+    }
 </style>
 
 <div id="screen">
     <div id="lyrics-container">
-        <span id="lyrics"></span>
-        <span id="cursor">_</span>
+        <span id="lyrics"></span><span class="cursor">_</span>
     </div>
     <div id="credits-container">
-        <span id="credits"></span>
-        <!-- <span id="cursor">_</span> -->
+        <span id="credits"></span><span class="cursor">_</span>
     </div>
     <div>
         <pre id="ascii-art"></pre>
@@ -59,16 +74,6 @@
     const creditsDiv = document.getElementById("credits")! as HTMLDivElement;
 
     const asciiArtDiv = document.getElementById("ascii-art")! as HTMLDivElement;
-
-    const cursor = document.getElementById("cursor")! as HTMLSpanElement;
-
-    setInterval(() => {
-        if (cursor.style.visibility === "visible") {
-            cursor.style.visibility = "hidden";
-        } else {
-            cursor.style.visibility = "visible";
-        }
-    }, 300);
 
     audio.addEventListener("canplaythrough", () => {
         const startTime = performance.now();
