@@ -17,7 +17,9 @@
 >
     <!-- <div class="h-1">----------------------------</div>
     <div class="h-1">----------------------------</div> -->
-    <div class="row-span-2"><span id="lyrics"></span></div>
+    <div class="row-span-2">
+        <span id="lyrics"></span><span id="cursor">_</span>
+    </div>
     <div class="" id="credits">
         " "CreditsOutroText" "Gautam Babbar" "CreditsOutroText" "Ted Backman"
         "CreditsOutroText" "Kelly Bailey" "CreditsOutroText" "Jeff Ballinger"
@@ -40,11 +42,21 @@
 
     const audio = new Audio("/portal_still_alive.mp3");
 
-    const lyricsDiv = document.getElementById("lyrics")! as HTMLDivElement;
+    const lyricsDiv = document.getElementById("lyrics")! as HTMLSpanElement;
 
     const creditsDiv = document.getElementById("credits")! as HTMLDivElement;
 
     const artDiv = document.getElementById("art")! as HTMLDivElement;
+
+    const cursor = document.getElementById("cursor")! as HTMLSpanElement;
+
+    setInterval(() => {
+        if (cursor.style.visibility === "visible") {
+            cursor.style.visibility = "hidden";
+        } else {
+            cursor.style.visibility = "visible";
+        }
+    }, 300);
 
     audio.addEventListener("canplaythrough", () => {
         const startTime = performance.now();
