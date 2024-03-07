@@ -4,7 +4,7 @@ export default {
 	theme: {
 		extend: {
 			colors: {
-				'credits-orange': '#c79d1d',
+				'credits-yellow': '#ffb600',
 			},
 		},
 	},
