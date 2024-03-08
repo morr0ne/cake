@@ -80,9 +80,8 @@
     import { credits } from "./credits";
     import { ASCII_ART } from "./ascii_art";
 
-    const audio = new Audio("/portal_still_alive.mp3");
+    const audio = new Audio("/portal_still_alive_with_padding.mp3");
     const dummy = new Audio("/dummy.mp3");
-
 
     const lyricsDiv = document.getElementById("lyrics") as HTMLSpanElement;
 
@@ -102,45 +101,30 @@
         event.preventDefault();
     });
 
-    // async function canPlayAudio(): Promise<boolean> {
-
-    //     console.log("called");
-
-    //     return new Promise((resolve, reject) => {
-    //         dummy.play().then(
-    //             () => {
-    //                 console.log("banana");
-    //                 resolve(true);
-    //             },
-    //             (e) => {
-    //                 console.log(e);
-    //                 resolve(false);
-    //             },
-    //         );
-    //     });
-    // }
-
     audio.addEventListener("canplaythrough", () => {
         dummy.play().then(
             () => {
-                const startTime = performance.now();
-
-                startLyrics(startTime);
-                startCredits(startTime);
+                start();
             },
             () => {
                 dialog.showModal();
 
                 closeButton.addEventListener("click", () => {
                     dialog.close();
-                    const startTime = performance.now();
-
-                    startLyrics(startTime);
-                    startCredits(startTime);
+                    start();
                 });
             },
         );
     });
+
+    function start() {
+        audio.play().then(() => {
+            const startTime = performance.now();
+
+            startLyrics(startTime);
+            startCredits(startTime);
+        });
+    }
 
     async function startCredits(startTime: number) {
         creditsDiv.innerText = "\n".repeat(16);
@@ -208,18 +192,10 @@
         let expectedTime = 0;
         let lyricIndex = 0;
 
-        let songStarted = false;
         let previousLineDone = true;
 
         function playSong() {
             const elasped = performance.now() - startTime;
-
-            if (!songStarted && elasped >= 6850) {
-                audio.play();
-                songStarted = true;
-
-                console.log(`Started playing audio after ${elasped}ms`);
-            }
 
             if (previousLineDone && elasped >= expectedTime) {
                 const lyric = lyrics[lyricIndex];
