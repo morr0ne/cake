@@ -18,10 +18,9 @@
         user-select: none;
 
         display: grid;
-        gap: 0px;
-
         grid-template-columns: repeat(2, minmax(0, 1fr));
         grid-template-rows: repeat(2, minmax(0, 1fr));
+        gap: 0px;
     }
 
     #lyrics-container {
@@ -48,7 +47,21 @@
             visibility: visible;
         }
     }
+
+    #audio-dialog {
+        background: #000;
+        color: #ffb600;
+        border-color: #ffb600;
+        border-width: 2px;
+        border-style: dashed;
+        user-select: none;
+        padding: 10px;
+    }
 </style>
+
+<dialog id="audio-dialog">
+    <button autofocus>Click here to play</button>
+</dialog>
 
 <div id="screen">
     <div id="lyrics-container">
@@ -67,19 +80,47 @@
     import { credits } from "./credits";
     import { ASCII_ART } from "./ascii_art";
 
+    const dummy = new Audio("/dummy.mp3");
     const audio = new Audio("/portal_still_alive.mp3");
 
-    const lyricsDiv = document.getElementById("lyrics")! as HTMLSpanElement;
+    const lyricsDiv = document.getElementById("lyrics") as HTMLSpanElement;
 
-    const creditsDiv = document.getElementById("credits")! as HTMLDivElement;
+    const creditsDiv = document.getElementById("credits") as HTMLDivElement;
 
-    const asciiArtDiv = document.getElementById("ascii-art")! as HTMLDivElement;
+    const asciiArtDiv = document.getElementById("ascii-art") as HTMLDivElement;
+
+    const dialog = document.getElementById(
+        "audio-dialog",
+    )! as HTMLDialogElement;
+
+    const closeButton = document.querySelector(
+        "dialog button",
+    ) as HTMLButtonElement;
+
+    dialog.addEventListener("cancel", (event) => {
+        event.preventDefault();
+    });
 
     audio.addEventListener("canplaythrough", () => {
-        const startTime = performance.now();
+        dummy.play().then(
+            () => {
+                const startTime = performance.now();
 
-        startLyrics(startTime);
-        startCredits(startTime);
+                startLyrics(startTime);
+                startCredits(startTime);
+            },
+            () => {
+                dialog.showModal();
+
+                closeButton.addEventListener("click", () => {
+                    dialog.close();
+                    const startTime = performance.now();
+
+                    startLyrics(startTime);
+                    startCredits(startTime);
+                });
+            },
+        );
     });
 
     async function startCredits(startTime: number) {
