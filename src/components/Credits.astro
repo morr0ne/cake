@@ -34,6 +34,10 @@ const bottomBorder = "-".repeat(50);
         gap: 0px;
     }
 
+    #audio-dialog {
+        visibility: hidden;
+    }
+
     #top-left-border {
         grid-column-end: span 2;
     }
@@ -101,10 +105,6 @@ const bottomBorder = "-".repeat(50);
     }
 </style>
 
-<dialog id="audio-dialog">
-    <button>Click here to play</button>
-</dialog>
-
 <div id="screen">
     <div id="top-left-border">{topBorder}</div>
     <div></div>
@@ -123,6 +123,7 @@ const bottomBorder = "-".repeat(50);
     <div></div>
     <div>
         <pre id="ascii-art"></pre>
+        <a id="audio-start" href="">Click here to play</a>
     </div>
     <div id="bottom-border">{bottomBorder}</div>
 </div>
@@ -141,17 +142,9 @@ const bottomBorder = "-".repeat(50);
 
     const asciiArtDiv = document.getElementById("ascii-art") as HTMLDivElement;
 
-    const dialog = document.getElementById(
-        "audio-dialog",
-    )! as HTMLDialogElement;
-
-    const closeButton = document.querySelector(
-        "dialog button",
-    ) as HTMLButtonElement;
-
-    dialog.addEventListener("cancel", (event) => {
-        event.preventDefault();
-    });
+    const audioStart = document.getElementById(
+        "audio-start",
+    )! as HTMLAnchorElement;
 
     creditsDiv.innerText = "\n".repeat(16);
 
@@ -161,10 +154,10 @@ const bottomBorder = "-".repeat(50);
                 start();
             },
             () => {
-                dialog.showModal();
+                audioStart.style.visibility = "visible";
+                audioStart.addEventListener("click", (e) => {
+                    e.preventDefault();
 
-                closeButton.addEventListener("click", () => {
-                    dialog.close();
                     start();
                 });
             },
@@ -172,6 +165,8 @@ const bottomBorder = "-".repeat(50);
     });
 
     function start() {
+        audioStart.remove();
+
         audio.play().then(() => {
             const startTime = performance.now();
 
