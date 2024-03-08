@@ -202,6 +202,10 @@ const bottomBorder = "-".repeat(50);
             if (previousLineDone && elasped >= expectedTime) {
                 const credit = credits[creditIndex];
 
+                if (credit === undefined) {
+                    return;
+                }
+
                 drawLine(credit, (elasped - expectedTime) / credit.length).then(
                     () => {
                         previousLineDone = true;
@@ -254,6 +258,10 @@ const bottomBorder = "-".repeat(50);
 
             if (previousLineDone && elasped >= expectedTime) {
                 const lyric = lyrics[lyricIndex];
+
+                if (lyric === undefined) {
+                    return;
+                }
 
                 if (lyric.asciiArt !== undefined) {
                     asciiArtDiv.innerText = ASCII_ART[lyric.asciiArt];
