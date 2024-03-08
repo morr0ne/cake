@@ -60,7 +60,7 @@
 </style>
 
 <dialog id="audio-dialog">
-    <button autofocus>Click here to play</button>
+    <button>Click here to play</button>
 </dialog>
 
 <div id="screen">
@@ -80,8 +80,9 @@
     import { credits } from "./credits";
     import { ASCII_ART } from "./ascii_art";
 
-    const dummy = new Audio("/dummy.mp3");
     const audio = new Audio("/portal_still_alive.mp3");
+    const dummy = new Audio("/dummy.mp3");
+
 
     const lyricsDiv = document.getElementById("lyrics") as HTMLSpanElement;
 
@@ -100,6 +101,24 @@
     dialog.addEventListener("cancel", (event) => {
         event.preventDefault();
     });
+
+    // async function canPlayAudio(): Promise<boolean> {
+
+    //     console.log("called");
+
+    //     return new Promise((resolve, reject) => {
+    //         dummy.play().then(
+    //             () => {
+    //                 console.log("banana");
+    //                 resolve(true);
+    //             },
+    //             (e) => {
+    //                 console.log(e);
+    //                 resolve(false);
+    //             },
+    //         );
+    //     });
+    // }
 
     audio.addEventListener("canplaythrough", () => {
         dummy.play().then(
@@ -126,7 +145,10 @@
     async function startCredits(startTime: number) {
         creditsDiv.innerText = "\n".repeat(16);
         let creditIndex = 0;
-        let startOffset = 9000;
+
+        const timing = 68.623562;
+        const startOffset = 9000;
+        let expectedTime = 9000;
 
         let previousLineDone = true;
 
@@ -138,13 +160,16 @@
                 return;
             }
 
-            if (previousLineDone) {
+            if (previousLineDone && elasped >= expectedTime) {
                 const credit = credits[creditIndex];
 
-                drawLine(credit).then(() => {
-                    previousLineDone = true;
-                });
+                drawLine(credit, (elasped - expectedTime) / credit.length).then(
+                    () => {
+                        previousLineDone = true;
+                    },
+                );
 
+                expectedTime += timing * credit.length;
                 creditIndex++;
                 previousLineDone = false;
             }
@@ -152,7 +177,7 @@
             window.requestAnimationFrame(playSong);
         }
 
-        function drawLine(credit: string): Promise<void> {
+        function drawLine(credit: string, deviation: number): Promise<void> {
             creditsDiv.innerText = creditsDiv.innerText.substring(
                 creditsDiv.innerText.indexOf("\n") + 1,
             );
@@ -172,7 +197,7 @@
                         clearInterval(id);
                         resolve();
                     }
-                }, 68.623562);
+                }, timing - deviation);
             });
         }
 
