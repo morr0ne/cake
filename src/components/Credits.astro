@@ -1,6 +1,7 @@
 ---
-const topBorder = "-".repeat(50);
-const leftBorder = "|".repeat(32);
+const topLeftBorder = "-".repeat(50);
+const topRightBorder = "-".repeat(49);
+const leftBorder = "│".repeat(32);
 const centerBorder = "||".repeat(16) + "| ".repeat(16);
 const rightBorder = "|".repeat(16);
 const bottomBorder = "-".repeat(50);
@@ -29,8 +30,8 @@ const bottomBorder = "-".repeat(50);
         user-select: none;
 
         display: grid;
-        grid-template-columns: 10px auto 20px 1fr 10px;
-        grid-template-rows: auto 1fr 10px 1fr auto;
+        grid-template-columns: 7px 485px 20px 485px 10px;
+        grid-template-rows: 14px 385px 10px 1fr 385px;
         gap: 0px;
     }
 
@@ -43,6 +44,9 @@ const bottomBorder = "-".repeat(50);
     }
 
     #left-border {
+        padding-top: 10px;
+        padding-bottom: 10px;
+
         grid-row-end: span 3;
 
         word-wrap: break-word;
@@ -50,21 +54,28 @@ const bottomBorder = "-".repeat(50);
     }
 
     #lyrics-container {
+        padding-left: 5px;
         grid-row-end: span 3;
     }
 
     #center-border {
+        padding-top: 10px;
+        padding-bottom: 10px;
+
         grid-row-end: span 3;
 
         word-wrap: break-word;
         word-break: break-all;
     }
 
-    /* #credits-container {
-        grid-row: 2;
-    } */
+    #credits-container {
+        padding-left: 16px;
+    }
 
     #right-border {
+        padding-top: 10px;
+        padding-bottom: 10px;
+
         word-wrap: break-word;
         word-break: break-all;
     }
@@ -74,6 +85,7 @@ const bottomBorder = "-".repeat(50);
     }
 
     #ascii-art {
+        text-align: center;
         line-height: 1.2;
     }
 
@@ -93,22 +105,12 @@ const bottomBorder = "-".repeat(50);
             visibility: visible;
         }
     }
-
-    #audio-dialog {
-        background: #000;
-        color: #ffb600;
-        border-color: #ffb600;
-        border-width: 2px;
-        border-style: dashed;
-        user-select: none;
-        padding: 10px;
-    }
 </style>
 
 <div id="screen">
-    <div id="top-left-border">{topBorder}</div>
+    <div id="top-left-border">{topLeftBorder}</div>
     <div></div>
-    <div id="top-right-border">{topBorder}</div>
+    <div id="top-right-border">{topRightBorder}</div>
     <div></div>
     <div id="left-border">{leftBorder}</div>
     <div id="lyrics-container">
@@ -119,7 +121,7 @@ const bottomBorder = "-".repeat(50);
         <span id="credits"></span><span class="cursor">_</span>
     </div>
     <div id="right-border">{rightBorder}</div>
-    <div id="middle-border">{topBorder}</div>
+    <div id="middle-border">{topRightBorder}</div>
     <div></div>
     <div>
         <pre id="ascii-art"></pre>
@@ -146,7 +148,7 @@ const bottomBorder = "-".repeat(50);
         "audio-start",
     )! as HTMLAnchorElement;
 
-    creditsDiv.innerText = "\n".repeat(16);
+    creditsDiv.innerText = "\n".repeat(15);
 
     audio.addEventListener("canplaythrough", () => {
         dummy.play().then(
@@ -184,12 +186,17 @@ const bottomBorder = "-".repeat(50);
 
         let previousLineDone = true;
 
+        let firstLine = true;
+
         async function playSong() {
             const elasped = performance.now() - startTime;
 
             if (elasped < startOffset) {
                 window.requestAnimationFrame(playSong);
                 return;
+            } else if (firstLine) {
+                creditsDiv.innerText += "\n";
+                firstLine = false;
             }
 
             if (previousLineDone && elasped >= expectedTime) {
