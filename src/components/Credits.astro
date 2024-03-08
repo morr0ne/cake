@@ -1,7 +1,19 @@
+---
+const topBorder = "-".repeat(50);
+const leftBorder = "|".repeat(32);
+const centerBorder = "||".repeat(16) + "| ".repeat(16);
+const rightBorder = "|".repeat(16);
+const bottomBorder = "-".repeat(50);
+---
+
 <style>
     @font-face {
         font-family: "Nimbus Mono";
         src: url("/NimbusMonoPS-Regular.ttf");
+    }
+
+    body {
+        background-color: #000;
     }
 
     #screen {
@@ -11,20 +23,50 @@
         font-size: 16px;
 
         color: #ffb600;
-        background-color: #000;
 
-        height: 100vh;
-        width: 100vw;
+        height: fit-content;
+        width: fit-content;
         user-select: none;
 
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        grid-template-rows: repeat(2, minmax(0, 1fr));
+        grid-template-columns: 10px auto 20px 1fr 10px;
+        grid-template-rows: auto 1fr 10px 1fr auto;
         gap: 0px;
     }
 
+    #top-left-border {
+        grid-column-end: span 2;
+    }
+
+    #left-border {
+        grid-row-end: span 3;
+
+        word-wrap: break-word;
+        word-break: break-all;
+    }
+
     #lyrics-container {
-        grid-row: span 2 / span 2;
+        grid-row-end: span 3;
+    }
+
+    #center-border {
+        grid-row-end: span 3;
+
+        word-wrap: break-word;
+        word-break: break-all;
+    }
+
+    /* #credits-container {
+        grid-row: 2;
+    } */
+
+    #right-border {
+        word-wrap: break-word;
+        word-break: break-all;
+    }
+
+    #bottom-border {
+        grid-column: auto / span 5;
     }
 
     #ascii-art {
@@ -64,15 +106,25 @@
 </dialog>
 
 <div id="screen">
+    <div id="top-left-border">{topBorder}</div>
+    <div></div>
+    <div id="top-right-border">{topBorder}</div>
+    <div></div>
+    <div id="left-border">{leftBorder}</div>
     <div id="lyrics-container">
         <span id="lyrics"></span><span class="cursor">_</span>
     </div>
+    <div id="center-border">{centerBorder}</div>
     <div id="credits-container">
         <span id="credits"></span><span class="cursor">_</span>
     </div>
+    <div id="right-border">{rightBorder}</div>
+    <div id="middle-border">{topBorder}</div>
+    <div></div>
     <div>
         <pre id="ascii-art"></pre>
     </div>
+    <div id="bottom-border">{bottomBorder}</div>
 </div>
 
 <script>
@@ -101,6 +153,8 @@
         event.preventDefault();
     });
 
+    creditsDiv.innerText = "\n".repeat(16);
+
     audio.addEventListener("canplaythrough", () => {
         dummy.play().then(
             () => {
@@ -127,7 +181,6 @@
     }
 
     async function startCredits(startTime: number) {
-        creditsDiv.innerText = "\n".repeat(16);
         let creditIndex = 0;
 
         const timing = 68.623562;
