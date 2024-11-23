@@ -272,7 +272,7 @@ const bottomBorder = "-".repeat(50);
                 }
 
                 if (lyric.asciiArt !== undefined) {
-                    asciiArtDiv.innerText = ASCII_ART[lyric.asciiArt];
+                    asciiArtDiv.innerText = ASCII_ART[lyric.asciiArt]!;
                 }
 
                 drawLine(lyric, elasped - expectedTime).then(() => {
