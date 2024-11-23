@@ -1,346 +1,344 @@
 ---
-const topLeftBorder = "-".repeat(50);
-const topRightBorder = "-".repeat(49);
-const leftBorder = "│".repeat(32);
-const centerBorder = "||".repeat(16) + "| ".repeat(16);
-const rightBorder = "|".repeat(16);
-const bottomBorder = "-".repeat(50);
+const topLeftBorder = '-'.repeat(50);
+const topRightBorder = '-'.repeat(49);
+const leftBorder = '│'.repeat(32);
+const centerBorder = '||'.repeat(16) + '| '.repeat(16);
+const rightBorder = '|'.repeat(16);
+const bottomBorder = '-'.repeat(50);
 ---
 
 <style>
-    @font-face {
-        font-family: "Nimbus Mono";
-        src: url("/NimbusMonoPS-Regular.ttf");
-    }
+  @font-face {
+    font-family: 'Nimbus Mono';
+    src: url('/NimbusMonoPS-Regular.ttf');
+  }
 
-    body {
-        background-color: #000;
-    }
+  body {
+    background-color: #000;
+  }
 
-    #screen {
-        font-family: "Courier New", "Nimbus Mono", "Courier", "CourierPrimeSans",
-            monospace;
-        font-weight: 900;
-        font-size: 16px;
+  #screen {
+    font-family: 'Courier New', 'Nimbus Mono', 'Courier', 'CourierPrimeSans',
+      monospace;
+    font-weight: 900;
+    font-size: 16px;
 
-        color: #ffb600;
+    color: #ffb600;
 
-        height: fit-content;
-        width: fit-content;
-        user-select: none;
+    height: fit-content;
+    width: fit-content;
+    user-select: none;
 
-        display: grid;
-        grid-template-columns: 7px 485px 20px 485px 10px;
-        grid-template-rows: 14px 385px 10px 1fr 385px;
-        gap: 0px;
-    }
+    display: grid;
+    grid-template-columns: 7px 485px 20px 485px 10px;
+    grid-template-rows: 14px 385px 10px 1fr 385px;
+    gap: 0px;
+  }
 
-    #audio-dialog {
-        visibility: hidden;
-    }
+  #audio-dialog {
+    visibility: hidden;
+  }
 
-    #top-left-border {
-        grid-column-end: span 2;
-    }
+  #top-left-border {
+    grid-column-end: span 2;
+  }
 
-    #left-border {
-        padding-top: 10px;
-        padding-bottom: 10px;
+  #left-border {
+    padding-top: 10px;
+    padding-bottom: 10px;
 
-        grid-row-end: span 3;
+    grid-row-end: span 3;
 
-        word-wrap: break-word;
-        word-break: break-all;
-    }
+    word-wrap: break-word;
+    word-break: break-all;
+  }
 
-    #lyrics-container {
-        padding-left: 5px;
-        grid-row-end: span 3;
-    }
+  #lyrics-container {
+    padding-left: 5px;
+    grid-row-end: span 3;
+  }
 
-    #center-border {
-        padding-top: 10px;
-        padding-bottom: 10px;
+  #center-border {
+    padding-top: 10px;
+    padding-bottom: 10px;
 
-        grid-row-end: span 3;
+    grid-row-end: span 3;
 
-        word-wrap: break-word;
-        word-break: break-all;
-    }
+    word-wrap: break-word;
+    word-break: break-all;
+  }
 
-    #credits-container {
-        padding-left: 16px;
-    }
+  #credits-container {
+    padding-left: 16px;
+  }
 
-    #right-border {
-        padding-top: 10px;
-        padding-bottom: 10px;
+  #right-border {
+    padding-top: 10px;
+    padding-bottom: 10px;
 
-        word-wrap: break-word;
-        word-break: break-all;
-    }
+    word-wrap: break-word;
+    word-break: break-all;
+  }
 
-    #bottom-border {
-        grid-column: auto / span 5;
-    }
+  #bottom-border {
+    grid-column: auto / span 5;
+  }
 
-    #ascii-art {
-        text-align: center;
-        line-height: 1.2;
-    }
+  #ascii-art {
+    text-align: center;
+    line-height: 1.2;
+  }
 
-    /* 
+  /* 
     FIXME
     The cursors in the game blink at opposite intervals
     */
-    #lyrics-cursor {
-        animation: blink 600ms step-end infinite;
-    }
+  #lyrics-cursor {
+    animation: blink 600ms step-end infinite;
+  }
 
-    #credits-cursor {
-        visibility: hidden;
-        animation: blink-opposite 600ms step-end infinite;
-    }
+  #credits-cursor {
+    visibility: hidden;
+    animation: blink-opposite 600ms step-end infinite;
+  }
 
-    @keyframes blink {
-        50% {
-            visibility: hidden;
-        }
-        100% {
-            visibility: visible;
-        }
+  @keyframes blink {
+    50% {
+      visibility: hidden;
     }
+    100% {
+      visibility: visible;
+    }
+  }
 
-    @keyframes blink-opposite {
-        50% {
-            visibility: visible;
-        }
-        100% {
-            visibility: hidden;
-        }
+  @keyframes blink-opposite {
+    50% {
+      visibility: visible;
     }
+    100% {
+      visibility: hidden;
+    }
+  }
 </style>
 
 <div id="screen">
-    <div id="top-left-border">{topLeftBorder}</div>
-    <div></div>
-    <div id="top-right-border">{topRightBorder}</div>
-    <div></div>
-    <div id="left-border">{leftBorder}</div>
-    <div id="lyrics-container">
-        <span id="lyrics"></span><span id="lyrics-cursor">_</span>
-    </div>
-    <div id="center-border">{centerBorder}</div>
-    <div id="credits-container">
-        <span id="credits"></span><span id="credits-cursor">_</span>
-    </div>
-    <div id="right-border">{rightBorder}</div>
-    <div id="middle-border">{topRightBorder}</div>
-    <div></div>
-    <div>
-        <pre id="ascii-art"></pre>
-        <a id="audio-start" href="">Click here to play</a>
-    </div>
-    <div id="bottom-border">{bottomBorder}</div>
+  <div id="top-left-border">{topLeftBorder}</div>
+  <div></div>
+  <div id="top-right-border">{topRightBorder}</div>
+  <div></div>
+  <div id="left-border">{leftBorder}</div>
+  <div id="lyrics-container">
+    <span id="lyrics"></span><span id="lyrics-cursor">_</span>
+  </div>
+  <div id="center-border">{centerBorder}</div>
+  <div id="credits-container">
+    <span id="credits"></span><span id="credits-cursor">_</span>
+  </div>
+  <div id="right-border">{rightBorder}</div>
+  <div id="middle-border">{topRightBorder}</div>
+  <div></div>
+  <div>
+    <pre id="ascii-art"></pre>
+    <a id="audio-start" href="">Click here to play</a>
+  </div>
+  <div id="bottom-border">{bottomBorder}</div>
 </div>
 
 <script>
-    import { lyrics, type Lyric } from "./lyrics";
-    import { credits } from "./credits";
-    import { ASCII_ART } from "./ascii_art";
+  import { lyrics, type Lyric } from './lyrics';
+  import { credits } from './credits';
+  import { ASCII_ART } from './ascii_art';
 
-    const audio = new Audio("/portal_still_alive_with_padding.mp3");
-    const dummy = new Audio("/dummy.mp3");
+  const audio = new Audio('/portal_still_alive_with_padding.mp3');
+  const dummy = new Audio('/dummy.mp3');
 
-    const lyricsDiv = document.getElementById("lyrics") as HTMLSpanElement;
+  const lyricsDiv = document.getElementById('lyrics') as HTMLSpanElement;
 
-    const creditsDiv = document.getElementById("credits") as HTMLDivElement;
+  const creditsDiv = document.getElementById('credits') as HTMLDivElement;
 
-    const asciiArtDiv = document.getElementById("ascii-art") as HTMLDivElement;
+  const asciiArtDiv = document.getElementById('ascii-art') as HTMLDivElement;
 
-    const audioStart = document.getElementById(
-        "audio-start",
-    )! as HTMLAnchorElement;
+  const audioStart = document.getElementById(
+    'audio-start',
+  )! as HTMLAnchorElement;
 
-    creditsDiv.innerText = "\n".repeat(15);
+  creditsDiv.innerText = '\n'.repeat(15);
 
-    audio.addEventListener("canplaythrough", () => {
-        dummy.play().then(
-            () => {
-                start();
-            },
-            () => {
-                audioStart.style.visibility = "visible";
-                audioStart.addEventListener("click", (e) => {
-                    e.preventDefault();
+  audio.addEventListener('canplaythrough', () => {
+    dummy.play().then(
+      () => {
+        start();
+      },
+      () => {
+        audioStart.style.visibility = 'visible';
+        audioStart.addEventListener('click', (e) => {
+          e.preventDefault();
 
-                    start();
-                });
-            },
-        );
-    });
-
-    function start() {
-        audioStart.remove();
-
-        audio.play().then(() => {
-            const startTime = performance.now();
-
-            startLyrics(startTime);
-            startCredits(startTime);
+          start();
         });
-    }
+      },
+    );
+  });
 
-    async function startCredits(startTime: number) {
-        let creditIndex = 0;
+  function start() {
+    audioStart.remove();
 
-        const timing = 68.623562;
-        const startOffset = 9000;
-        let expectedTime = startOffset;
+    audio.play().then(() => {
+      const startTime = performance.now();
 
-        let previousLineDone = true;
+      startLyrics(startTime);
+      startCredits(startTime);
+    });
+  }
 
-        async function playSong() {
-            const elasped = performance.now() - startTime;
+  async function startCredits(startTime: number) {
+    let creditIndex = 0;
 
-            if (elasped < startOffset) {
-                window.requestAnimationFrame(playSong);
-                return;
-            }
+    const timing = 68.623562;
+    const startOffset = 9000;
+    let expectedTime = startOffset;
 
-            if (previousLineDone && elasped >= expectedTime) {
-                const credit = credits[creditIndex];
+    let previousLineDone = true;
 
-                if (credit === undefined) {
-                    return;
-                }
+    async function playSong() {
+      const elasped = performance.now() - startTime;
 
-                drawLine(credit, (elasped - expectedTime) / credit.length).then(
-                    () => {
-                        previousLineDone = true;
-                    },
-                );
-
-                expectedTime += timing * credit.length;
-                creditIndex++;
-                previousLineDone = false;
-            }
-
-            window.requestAnimationFrame(playSong);
-        }
-
-        function drawLine(credit: string, deviation: number): Promise<void> {
-            return new Promise((resolve) => {
-                let charIndex = 0;
-
-                let id = setInterval(() => {
-                    const char = credit[charIndex];
-
-                    creditsDiv.innerHTML += char;
-                    charIndex++;
-
-                    if (charIndex >= credit.length) {
-                        creditsDiv.innerText = creditsDiv.innerText.substring(
-                            creditsDiv.innerText.indexOf("\n") + 1,
-                        );
-                        creditsDiv.innerText += "\n";
-
-                        clearInterval(id);
-                        resolve();
-                    }
-                }, timing - deviation);
-            });
-        }
-
+      if (elasped < startOffset) {
         window.requestAnimationFrame(playSong);
-    }
+        return;
+      }
 
-    function startLyrics(startTime: number) {
-        let expectedTime = 0;
-        let lyricIndex = 0;
+      if (previousLineDone && elasped >= expectedTime) {
+        const credit = credits[creditIndex];
 
-        let previousLineDone = true;
-
-        function playSong() {
-            const elasped = performance.now() - startTime;
-
-            if (previousLineDone && elasped >= expectedTime) {
-                const lyric = lyrics[lyricIndex];
-
-                if (lyric === undefined) {
-                    return;
-                }
-
-                if (lyric.asciiArt !== undefined) {
-                    asciiArtDiv.innerText = ASCII_ART[lyric.asciiArt]!;
-                }
-
-                drawLine(lyric, elasped - expectedTime).then(() => {
-                    previousLineDone = true;
-                });
-
-                expectedTime += lyric.duration;
-                lyricIndex++;
-                previousLineDone = false;
-            }
-
-            window.requestAnimationFrame(playSong);
+        if (credit === undefined) {
+          return;
         }
 
-        function drawLine(lyric: Lyric, deviation: number): Promise<void> {
-            switch (lyric.line) {
-                case " ":
-                    return new Promise((resolve) =>
-                        setTimeout(resolve, lyric.duration - deviation),
-                    );
-                case "* ":
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            lyricsDiv.innerText += " ";
-                            resolve();
-                        }, lyric.duration - deviation);
-                    });
-                case "&":
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            lyricsDiv.innerText = "";
-                            resolve();
-                        }, lyric.duration - deviation);
-                    });
-                case "^":
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            lyricsDiv.innerText += "\n";
-                            resolve();
-                        }, lyric.duration - deviation);
-                    });
+        drawLine(credit, (elasped - expectedTime) / credit.length).then(() => {
+          previousLineDone = true;
+        });
 
-                default:
-                    return new Promise((resolve) => {
-                        let charIndex = 0;
+        expectedTime += timing * credit.length;
+        creditIndex++;
+        previousLineDone = false;
+      }
 
-                        let id = setInterval(
-                            () => {
-                                const char = lyric.line[charIndex];
+      window.requestAnimationFrame(playSong);
+    }
 
-                                lyricsDiv.innerHTML += char;
-                                charIndex++;
+    function drawLine(credit: string, deviation: number): Promise<void> {
+      return new Promise((resolve) => {
+        let charIndex = 0;
 
-                                if (charIndex >= lyric.line.length) {
-                                    if (!lyric.sameLine) {
-                                        lyricsDiv.innerText += "\n";
-                                    }
+        let id = setInterval(() => {
+          const char = credit[charIndex];
 
-                                    clearInterval(id);
-                                    resolve();
-                                }
-                            },
-                            (lyric.duration - deviation) / lyric.line.length,
-                        );
-                    });
-            }
+          creditsDiv.innerHTML += char;
+          charIndex++;
+
+          if (charIndex >= credit.length) {
+            creditsDiv.innerText = creditsDiv.innerText.substring(
+              creditsDiv.innerText.indexOf('\n') + 1,
+            );
+            creditsDiv.innerText += '\n';
+
+            clearInterval(id);
+            resolve();
+          }
+        }, timing - deviation);
+      });
+    }
+
+    window.requestAnimationFrame(playSong);
+  }
+
+  function startLyrics(startTime: number) {
+    let expectedTime = 0;
+    let lyricIndex = 0;
+
+    let previousLineDone = true;
+
+    function playSong() {
+      const elasped = performance.now() - startTime;
+
+      if (previousLineDone && elasped >= expectedTime) {
+        const lyric = lyrics[lyricIndex];
+
+        if (lyric === undefined) {
+          return;
         }
 
-        window.requestAnimationFrame(playSong);
+        if (lyric.asciiArt !== undefined) {
+          asciiArtDiv.innerText = ASCII_ART[lyric.asciiArt]!;
+        }
+
+        drawLine(lyric, elasped - expectedTime).then(() => {
+          previousLineDone = true;
+        });
+
+        expectedTime += lyric.duration;
+        lyricIndex++;
+        previousLineDone = false;
+      }
+
+      window.requestAnimationFrame(playSong);
     }
+
+    function drawLine(lyric: Lyric, deviation: number): Promise<void> {
+      switch (lyric.line) {
+        case ' ':
+          return new Promise((resolve) =>
+            setTimeout(resolve, lyric.duration - deviation),
+          );
+        case '* ':
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              lyricsDiv.innerText += ' ';
+              resolve();
+            }, lyric.duration - deviation);
+          });
+        case '&':
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              lyricsDiv.innerText = '';
+              resolve();
+            }, lyric.duration - deviation);
+          });
+        case '^':
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              lyricsDiv.innerText += '\n';
+              resolve();
+            }, lyric.duration - deviation);
+          });
+
+        default:
+          return new Promise((resolve) => {
+            let charIndex = 0;
+
+            let id = setInterval(
+              () => {
+                const char = lyric.line[charIndex];
+
+                lyricsDiv.innerHTML += char;
+                charIndex++;
+
+                if (charIndex >= lyric.line.length) {
+                  if (!lyric.sameLine) {
+                    lyricsDiv.innerText += '\n';
+                  }
+
+                  clearInterval(id);
+                  resolve();
+                }
+              },
+              (lyric.duration - deviation) / lyric.line.length,
+            );
+          });
+      }
+    }
+
+    window.requestAnimationFrame(playSong);
+  }
 </script>
